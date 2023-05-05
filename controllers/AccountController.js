@@ -29,8 +29,7 @@ module.exports = {
                 }
                 const {JWT_SECRET} = process.env
                 jwt.sign({
-                    email: account.email,
-                    fullname: account.fullname
+                    id: account._id
                 },JWT_SECRET, {
                     expiresIn: '1h'
                 }, (err, token) => {
