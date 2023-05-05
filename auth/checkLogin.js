@@ -16,7 +16,6 @@ module.exports = (req, res, next) => {
             return res.status(401).json({code: 101, message: 'token khong hop le hoac da het han'})
         }
         req.user = data
-        console.log(req.user)
         next()
     })
 }
