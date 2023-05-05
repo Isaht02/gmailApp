@@ -11,24 +11,11 @@ app.use(express.json())
 app.use(cors())
 
 const AccountRouter = require('./routers/AccountRouter')
+const EmailRouter = require('./routers/EmailRouter')
 
-app.get('/', (req, res) => {
-	res.render('index')
-})
-
-app.get('/list', (req, res) => {
-	res.render('listMail')
-})
-
-app.get('/readmail', (req, res) => {
-	res.render('readMail')
-})
-
-app.get('/sendmail', (req, res) => {
-	res.render('sendMail')
-})
 
 app.use('/account', AccountRouter)
+app.use('/email', EmailRouter)
 
 app.all('*', (req, res) => res.json({code:101, message: 'Đường dẫn hoặc phương thức không được hỗ trợ'}))
 
