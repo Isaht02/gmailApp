@@ -17,6 +17,7 @@ const EmailSchema = new Schema({
       type: Boolean,
       default: false,
     },
+    attachment: String,
   },
   {
     timestamps: true,
