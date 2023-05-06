@@ -10,7 +10,8 @@ const Account = require('../models/AccountModel')
 
 module.exports = {
     getLogin: function(req, res){
-        res.render('login')
+        const error = req.flash('error') || ''
+        res.render('login', {error})
     },
 
     loginValidator: function(req, res) {
@@ -29,7 +30,7 @@ module.exports = {
             })
             .then(passwordMatch => {
                 if (!passwordMatch) {
-                    return res.status(401).json({code: 3, message: 'Đăng nhập thất bại, mật khẩu không chính xác'})
+                    throw new Error('Mật khẩu không chính xác')
                 }
                 const {JWT_SECRET} = process.env
                 jwt.sign({
@@ -45,7 +46,8 @@ module.exports = {
                 })
             })
             .catch(e => {
-                return res.status(401).json({code: 2, message: 'Đăng nhập thất bại: ' + e.message})
+                req.flash('error', e.message)
+                return res.redirect('login')
             })
         }
         else {
@@ -55,12 +57,14 @@ module.exports = {
                 message = messages[m].msg
                 break
             }
-            return res.json({code: 1, message: message})
+            req.flash('error', message)
+            return res.redirect('login')
         }
     },
 
     getRegister: function(req, res) {
-        res.render('register')
+        const error = req.flash('error') || ''
+        res.render('register', {error})
     },
 
     registerValidator: function(req, res) {
@@ -68,19 +72,18 @@ module.exports = {
         if (result.errors.length === 0) {
     
             let {phonenum, email, password, fullname} = req.body
-            Account.findOne({phonenum: phonenum})
-            .then(phone => {
-                if (phone) {
-                    return res.json({code: 4, message: 'Số điện thoại này đã tồn tại'})
+            Account.findOne({email: email})
+            .then(acc => {
+                if (acc) {
+                    throw new Error('Email này đã tồn tại')
+                }
+                return Account.findOne({phonenum: phonenum})
+            })
+            .then(phonecheck =>{
+                if(phonecheck){
+                    throw new Error('Số điện thoại này đã tồn tại')
                 }
             })
-            .then(Account.findOne({email: email})
-            .then(acc =>{
-                if(acc){
-                    return res.json({code: 4, message: 'Email này đã tồn tại'})
-                }
-            })
-            )
 
             .then(() => bcrypt.hash(password, 10))
             .then(hashed => {
@@ -95,11 +98,11 @@ module.exports = {
             })
             .then(() => {
                 // không cần trả về chi tiết tài khoản nữa
-                return res.json({code: 0, message: 'Đăng ký tài khoản thành công'})
+                return res.redirect('login')
             })
             .catch(e => {
-                return res.json({code: 2, message: 'Đăng ký tài khoản thất bại: ' + 
-                                    e.message})
+                req.flash('error', e.message)
+                return res.redirect('register')
             })
             
         }
@@ -110,7 +113,8 @@ module.exports = {
                 message = messages[m].msg
                 break
             }
-            return res.json({code: 1, message: message})
+            req.flash('error', message)
+            return res.redirect('register')
         }
 
     }

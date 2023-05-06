@@ -33,7 +33,12 @@
                     <input name="phonenum" id="phonenum" type="text" class="form-control" placeholder="Enter Your Phone Number">
                 </div>
                 <div class="form-group">
-                    <!-- <div class="alert alert-danger">Invalid username or password</div> -->
+                    <% if(error.length > 0) {%>
+                    <div class="alert alert-danger alert-dismissible fade show">
+                        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                        <%=error %>
+                    </div>
+                    <% } %>
                     <button class="btn btn-success px-5">Register</button>
                 </div>
             </form>

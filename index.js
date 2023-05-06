@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const mongoose = require('mongoose')
 const session = require('express-session');
+const flash = require('express-flash')
 const cors = require('cors')
 const app = express()
 
@@ -17,6 +18,7 @@ app.use(
   })
 );
 app.use(cors())
+app.use(flash())
 
 const AccountRouter = require('./routers/AccountRouter')
 const EmailRouter = require('./routers/EmailRouter')
