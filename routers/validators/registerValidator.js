@@ -6,6 +6,11 @@ module.exports = [
     .notEmpty().withMessage('Địa chỉ email không được để trống')
     .isEmail().withMessage('Địa chỉ email không hợp lệ'),
 
+    check('phonenum')
+    .exists().withMessage('Vui lòng cung cấp địa số điện thoại')
+    .notEmpty().withMessage('Số điện thoại không được để trống')
+    .isLength({min:10, max:10}).withMessage('Số điện thoại không hợp lệ'),
+
     check('password')
     .exists().withMessage('Vui lòng cung cấp mật khẩu')
     .notEmpty().withMessage('Mật khẩu không được để trống')

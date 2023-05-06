@@ -6,9 +6,10 @@ const AccountController = require('../controllers/AccountController')
 const registerValidator = require('../routers/validators/registerValidator')
 const loginValidator = require('../routers/validators/loginValidator')
 
-
+Router.get('/login', AccountController.getLogin)
 Router.post('/login', loginValidator, AccountController.loginValidator)
 
-Router.post('/register', loginValidator, AccountController.registerValidator)
+Router.get('/register', AccountController.getRegister)
+Router.post('/register', registerValidator, AccountController.registerValidator)
 
 module.exports = Router

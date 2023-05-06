@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Register</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <h3 class="text-center text-secondary mt-5 mb-3">Register</h3>
+            <form action="register" method="POST" class="border rounded w-100 mb-5 mx-auto px-3 pt-3 bg-light">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input name="email" id="email" type="text" class="form-control" placeholder="Enter Your Email">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input name="password" id="password" type="password" class="form-control" placeholder="Enter Your Password">
+                </div>
+                <div class="form-group">
+                    <label for="fullname">Full Name</label>
+                    <input name="fullname" id="fullname" type="fullname" class="form-control" placeholder="Enter Your Full Name">
+                </div>
+                <div class="form-group">
+                    <label for="phonenum">Số điện thoại</label>
+                    <input name="phonenum" id="phonenum" type="text" class="form-control" placeholder="Enter Your Phone Number">
+                </div>
+                <div class="form-group">
+                    <!-- <div class="alert alert-danger">Invalid username or password</div> -->
+                    <button class="btn btn-success px-5">Register</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

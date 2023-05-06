@@ -9,6 +9,10 @@ const Account = require('../models/AccountModel')
 
 
 module.exports = {
+    getLogin: function(req, res){
+        res.render('login')
+    },
+
     loginValidator: function(req, res) {
         let result = validationResult(req)
         if (result.errors.length === 0) {
@@ -56,21 +60,34 @@ module.exports = {
         }
     },
 
+    getRegister: function(req, res) {
+        res.render('register')
+    },
+
     registerValidator: function(req, res) {
         let result = validationResult(req)
         if (result.errors.length === 0) {
     
-            let {email, password, fullname} = req.body
-            Account.findOne({email: email})
-            .then(acc => {
-                if (acc) {
-                    throw new Error('Tài khoản này đã tồn tại (email)')
+            let {phonenum, email, password, fullname} = req.body
+            Account.findOne({phonenum: phonenum})
+            .then(phone => {
+                if (phone) {
+                    return res.json({code: 4, message: 'Số điện thoại này đã tồn tại'})
                 }
             })
+            .then(Account.findOne({email: email})
+            .then(acc =>{
+                if(acc){
+                    return res.json({code: 4, message: 'Email này đã tồn tại'})
+                }
+            })
+            )
+
             .then(() => bcrypt.hash(password, 10))
             .then(hashed => {
     
                 let user = new Account({
+                    phonenum: phonenum,
                     email: email, 
                     password: hashed,
                     fullname: fullname
