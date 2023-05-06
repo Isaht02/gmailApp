@@ -1,151 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-
-    <link rel="stylesheet" href="./sendMail.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-    />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/sendMail.css" />
+    <style>
+    .avatar {
+        width: 40px;
+        height: 35px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 10px;
+    }
+    </style>
     <title>Email</title>
-  </head>
+</head>
+
 <body>
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
-    <link href="https://select2.github.io/dist/css/select2.min.css" rel="stylesheet">
-    <script src="https://select2.github.io/dist/js/select2.full.js"></script>
     <div class="container">
-    <div class="row inbox">
-        <div class="col-sm-3">
-            <ul class="nav nav-pills nav-stacked nav-email rounded shadow mb-20">
-                <li class="active">
-                    <a href="list">
-                        <i class="fa fa-inbox"></i> Inbox  <span class="label pull-right">7</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#"><i class="fa fa-envelope-o"></i> Send Mail</a>
-                </li>
-                <li>
-                    <a href="#"><i class="fa fa-certificate"></i> Important</a>
-                </li>
-                <li>
-                    <a href="#">
-                        <i class="fa fa-file-text-o"></i> Drafts <span class="label label-info pull-right inbox-notification">35</span>
-                    </a>
-                </li>
-                <li><a href="#"> <i class="fa fa-trash-o"></i> Trash</a></li>
-            </ul>
-
-            <h5 class="nav-email-subtitle">More</h5>
-            <ul class="nav nav-pills nav-stacked nav-email mb-20 rounded shadow">
-                <li>
-                    <a href="#">
-                        <i class="fa fa-folder-open"></i> Promotions  <span class="label label-danger pull-right">3</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <i class="fa fa-folder-open"></i> Job list
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <i class="fa fa-folder-open"></i> Backup
-                    </a>
-                </li>
-            </ul>
+        <div class="row inbox">
+            <div class="container mt-3">
+                <a href="/profile"><h4 class="welcome-text text-right mb-2"><img src="/avt.jpg" class="avatar" id="avatar-preview"><%= name %></h4></a>
+            </div>
+            <div class="col-sm-3">
+                <ul class="nav nav-pills nav-stacked nav-email rounded shadow mb-20">
+                    <li class="active">
+                        <a href="/email">
+                            <i class="fa fa-inbox"></i> Inbox <span class="label pull-right">7</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fa fa-envelope-o"></i> Send Mail</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fa fa-certificate"></i> Important</a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa fa-file-text-o"></i> Drafts <span class="label label-info pull-right inbox-notification">35</span>
+                        </a>
+                    </li>
+                    <li><a href="#"> <i class="fa fa-trash-o"></i> Trash</a></li>
+                </ul>
+                <h5 class="nav-email-subtitle">More</h5>
+                <ul class="nav nav-pills nav-stacked nav-email mb-20 rounded shadow">
+                    <li>
+                        <a href="#">
+                            <i class="fa fa-folder-open"></i> Promotions <span class="label label-danger pull-right">3</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa fa-folder-open"></i> Job list
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa fa-folder-open"></i> Backup
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-9">
+                <div class="panel panel-default">
+                    <div class="panel-body message">
+                        <p class="text-center">New Message</p>
+                        <form action="/email/send" class="form-horizontal" method="post" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="to" class="col-sm-1 control-label">To:</label>
+                                <div class="col-sm-11">
+                                    <input type="email" name="to" class="form-control select2-offscreen" id="to" placeholder="Type email" tabindex="-1">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="subject" class="col-sm-1 control-label">Subject:</label>
+                                <div class="col-sm-11">
+                                    <input type="text" name="subject" class="form-control select2-offscreen" id="subject" placeholder="Type subject" tabindex="-1">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <input style="margin-top: 5px; margin-left: 15px;" type="file" id="attachment" name="attachment">
+                            </div>
+                            <div class="form-group">
+                                <textarea class="form-control" id="message" name="message" rows="12" placeholder="Click here to message"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-success">Send</button>
+                                <button type="submit" class="btn btn-default">Draft</button>
+                                <button type="submit" class="btn btn-danger">Discard</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        <div class="col-md-9">
-            <div class="panel panel-default">
-                <div class="panel-body message">
-                    <p class="text-center">New Message</p>
-                    <form class="form-horizontal" role="form">
-                        <div class="form-group">
-                            <label for="to" class="col-sm-1 control-label">To:</label>
-                            <div class="col-sm-11">
-                                  <input type="email" class="form-control select2-offscreen" id="to" placeholder="Type email" tabindex="-1">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="cc" class="col-sm-1 control-label">CC:</label>
-                            <div class="col-sm-11">
-                                  <input type="email" class="form-control select2-offscreen" id="cc" placeholder="Type email" tabindex="-1">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="bcc" class="col-sm-1 control-label">BCC:</label>
-                            <div class="col-sm-11">
-                                  <input type="email" class="form-control select2-offscreen" id="bcc" placeholder="Type email" tabindex="-1">
-                            </div>
-                        </div>
-                      
-                    </form>
-                    
-                    <div class="col-sm-11 col-sm-offset-1">
-                        
-                        <div class="btn-toolbar" role="toolbar">
-                            
-                            <div class="btn-group">
-                                <button class="btn btn-default"><span class="fa fa-bold"></span></button>
-                                <button class="btn btn-default"><span class="fa fa-italic"></span></button>
-                                <button class="btn btn-default"><span class="fa fa-underline"></span></button>
-                            </div>
-
-                            <div class="btn-group">
-                                <button class="btn btn-default"><span class="fa fa-align-left"></span></button>
-                                <button class="btn btn-default"><span class="fa fa-align-right"></span></button>
-                                <button class="btn btn-default"><span class="fa fa-align-center"></span></button>
-                                <button class="btn btn-default"><span class="fa fa-align-justify"></span></button>
-                            </div>
-                            
-                            <div class="btn-group">
-                                <button class="btn btn-default"><span class="fa fa-indent"></span></button>
-                                <button class="btn btn-default"><span class="fa fa-outdent"></span></button>
-                            </div>
-                            
-                            <div class="btn-group">
-                                <button class="btn btn-default"><span class="fa fa-list-ul"></span></button>
-                                <button class="btn btn-default"><span class="fa fa-list-ol"></span></button>
-                            </div>
-                            <button class="btn btn-default"><span class="fa fa-trash-o"></span></button>    
-                            <button class="btn btn-default"><span class="fa fa-paperclip"></span></button>
-                            <div class="btn-group">
-                                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="fa fa-tags"></span> <span class="caret"></span></button>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#">add label <span class="label label-danger"> Home</span></a></li>
-                                    <li><a href="#">add label <span class="label label-info">Job</span></a></li>
-                                    <li><a href="#">add label <span class="label label-success">Clients</span></a></li>
-                                    <li><a href="#">add label <span class="label label-warning">News</span></a></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <br>    
-                        
-                        <div class="form-group">
-                            <textarea class="form-control" id="message" name="body" rows="12" placeholder="Click here to reply"></textarea>
-                        </div>
-                        
-                        <div class="form-group">    
-                            <button type="submit" class="btn btn-success">Send</button>
-                            <button type="submit" class="btn btn-default">Draft</button>
-                            <button type="submit" class="btn btn-danger">Discard</button>
-                        </div>
-                    </div>  
-                </div>  
-            </div>  
-        </div><!--/.col-->      
+        <!--/.col-->
     </div>
-    </div>
-    <script type="text/javascript">
-        $(document).ready(function(){
-            $("#to, #cc, #bcc").select2({tags:["team@bm.com", "ceo@bm.com", "cto@bm.com"]});
-        }); 
-    </script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 </body>
+
 </html>

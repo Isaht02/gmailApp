@@ -7,9 +7,12 @@ const upload = require('../middlewares/attachment')
 
 Router.get('/', CheckLogin, EmailController.getAllEmails)
 
-Router.get('/send', EmailController.getSendEmail)
-Router.post('/send', CheckLogin, emailValidator, upload.single('attachment'), EmailController.sendEmail)
+
+Router.get('/send', CheckLogin, EmailController.getSendEmail)
+Router.post('/send', CheckLogin, upload.single('attachment'), EmailController.sendEmail)
 Router.post('/send/:id', CheckLogin, EmailController.replyEmail)
+
+Router.get('/:id', CheckLogin, EmailController.getDetailEmail)
 
 Router.post('/draft', CheckLogin, emailValidator, EmailController.saveDraft)
 Router.put('/draft/:id', CheckLogin, emailValidator, EmailController.updateDraft)
@@ -19,7 +22,7 @@ Router.put('/:id/untrash', CheckLogin, EmailController.removeFromTrash)
 
 Router.put('/:id/:toggle', CheckLogin, EmailController.toggleEmailProperty)
 
-Router.delete('/:id', CheckLogin, EmailController.deleteEmail)
+Router.delete('/delete/:id', CheckLogin, EmailController.deleteEmail)
 
 Router.post('/transfer/:id', CheckLogin, EmailController.transferEmail)
 module.exports = Router

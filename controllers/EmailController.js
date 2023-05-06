@@ -8,11 +8,10 @@ module.exports = {
 
 	getAllEmails: async function (req, res, next) {
 		try {
-		  const { mailbox } = await Account.findOne({ _id: req.user.id })
-			.select('mailbox')
-			.populate('mailbox.inbox mailbox.outbox mailbox.draft mailbox.trash');
-			console.log('Emails found', mailbox)
-			res.status(200).render('listMail')
+		  	const {mailbox} = await Account.findOne({ _id: req.user.id })
+				.select('mailbox')
+				.populate('mailbox.inbox mailbox.outbox mailbox.draft mailbox.trash');
+			return res.status(200).render('listMail', {emails: mailbox.inbox, name: req.user.name})
 		}catch (error) {
 			console.log(error)
 			res.status(500)
@@ -20,7 +19,19 @@ module.exports = {
 	},
 
 	getSendEmail: function (req, res, next) {
-		res.render('send')
+		return res.render('sendMail', {name: req.user.name})
+	},
+
+	getDetailEmail: async function (req, res, next) {
+		try {
+			//console.log(req.params.id)
+		  	const email = await Email.findOne({ _id: req.params.id })
+
+			return res.status(200).render('readMail',{email, name: req.user.name}	)
+		}catch (error) {
+			console.log(error)
+			res.status(500)
+		}	
 	},
 
 	sendEmail: async function (req, res, next) {
@@ -44,33 +55,22 @@ module.exports = {
 		    	attachmentPath = req.file.path;
 			}
 			const newEmailOut = new Email({
-				from: req.body.from,
+				from: req.user.email,
 				to: req.body.to,
 				subject: req.body.subject,
 				message: req.body.message,
 				attachment: attachmentPath,
 			})
 			const savedEmailOut = await newEmailOut.save()
-			console.log('Email sent', savedEmailOut)
-
-			const newEmailIn = new Email({
-				from: req.body.to,
-				to: req.body.from,
-				subject: 'Re: ' + req.body.subject,
-				message: req.body.message,
-				attachment: attachmentPath,
-			})
-			const savedEmailIn = await newEmailIn.save()
-			console.log('Reply received', savedEmailIn)
 
 			res
 				.status(201)
-				.json({ message: 'Email sent, reply received', sent: savedEmailOut, received: savedEmailIn })
+				.json({ message: 'Email sent, reply received', sent: savedEmailOut, received: savedEmailOut })
 
 			const foundAccount = await Account.findOne({ _id: req.user.id })
 
 			foundAccount.mailbox.outbox.push(savedEmailOut._id)
-			foundReceiverAccount.mailbox.inbox.push(savedEmailIn._id)
+			foundReceiverAccount.mailbox.inbox.push(savedEmailOut._id)
 			await foundAccount.save()
 			await foundReceiverAccount.save()
 		}catch (error) {
