@@ -9,7 +9,8 @@ module.exports = [
     check('password')
     .exists().withMessage('Vui lòng cung cấp mật khẩu')
     .notEmpty().withMessage('Mật khẩu không được để trống')
-    .isLength({min: 6}).withMessage('Mật khẩu phải có tối thiểu 6 ký tự'),
+    .isLength({min: 6}).withMessage('Mật khẩu phải có tối thiểu 6 ký tự')
+    .custom((value, {req}) => value === req.body.confirmpassword).withMessage('Xác nhận mật khẩu không giống nhau'),
 
     check('fullname')
     .exists().withMessage('Vui lòng cung cấp tên người dùng')

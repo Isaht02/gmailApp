@@ -10,8 +10,14 @@ const Account = require('../models/AccountModel')
 
 module.exports = {
     getLogin: function(req, res){
-        const error = req.flash('error') || ''
-        res.render('login', {error})
+        if(req.session.token){
+            res.redirect('/email')
+        }
+        else{
+            const error = req.flash('error') || ''
+            res.render('login', {error})
+        }
+
     },
 
     loginValidator: function(req, res) {
@@ -71,7 +77,7 @@ module.exports = {
         let result = validationResult(req)
         if (result.errors.length === 0) {
     
-            let {phonenum, email, password, fullname} = req.body
+            let {phonenum, email, password, fullname, avatar} = req.body
             Account.findOne({email: email})
             .then(acc => {
                 if (acc) {
@@ -92,7 +98,8 @@ module.exports = {
                     phonenum: phonenum,
                     email: email, 
                     password: hashed,
-                    fullname: fullname
+                    fullname: fullname,
+                    avatar: ''
                 })
                 return user.save();
             })
@@ -117,5 +124,16 @@ module.exports = {
             return res.redirect('register')
         }
 
+    },
+
+
+    getProfile: async function(req, res){
+        const {JWT_SECRET} = process.env
+        var decodedJWT = jwt.verify(req.session.token, JWT_SECRET)
+
+        var ObjectId = require('mongodb').ObjectId
+        const user = await Account.findOne( {"_id": new ObjectId(decodedJWT)})
+
+        res.render('profile', {user})
     }
 }

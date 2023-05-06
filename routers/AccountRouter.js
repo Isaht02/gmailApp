@@ -12,4 +12,6 @@ Router.post('/login', loginValidator, AccountController.loginValidator)
 Router.get('/register', AccountController.getRegister)
 Router.post('/register', registerValidator, AccountController.registerValidator)
 
+Router.get('/profile', AccountController.getProfile)
+
 module.exports = Router
