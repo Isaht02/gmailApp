@@ -38,11 +38,8 @@ module.exports = {
                     expiresIn: '1h'
                 }, (err, token) => {
                     if (err) throw err
-                    return res.json({
-                        code: 0,
-                        message:'Đăng nhập thành công',
-                        token: token
-                    })
+                    req.session.token = token
+                    return res.redirect('/email')
                 })
             })
             .catch(e => {

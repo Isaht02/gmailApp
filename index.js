@@ -1,6 +1,7 @@
 require('dotenv').config()
 const express = require('express')
 const mongoose = require('mongoose')
+const session = require('express-session');
 const cors = require('cors')
 const app = express()
 
@@ -8,6 +9,13 @@ app.use(express.static('public'))
 app.set('view engine', 'ejs')
 app.use(express.urlencoded({extended: false}))
 app.use(express.json())
+app.use(
+  session({
+    secret: 'conmeomauxanhla', 
+    resave: false,
+    saveUninitialized: false
+  })
+);
 app.use(cors())
 
 const AccountRouter = require('./routers/AccountRouter')

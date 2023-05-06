@@ -400,6 +400,11 @@
     </div>
 </div>
 </div>
+    <script>
+        if($window.sessionStorage.token) {
+          xhr.setRequestHeader("Authorization", $window.sessionStorage.token);
+        }
+    </script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 </body>
 </html>

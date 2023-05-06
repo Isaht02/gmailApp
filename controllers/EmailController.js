@@ -12,7 +12,7 @@ module.exports = {
 			.select('mailbox')
 			.populate('mailbox.inbox mailbox.outbox mailbox.draft mailbox.trash');
 			console.log('Emails found', mailbox)
-			res.status(200).json({ message: 'Emails found', mailbox })
+			res.status(200).render('listMail')
 		}catch (error) {
 			console.log(error)
 			res.status(500)
