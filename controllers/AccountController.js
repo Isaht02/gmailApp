@@ -101,7 +101,7 @@ module.exports = {
                     email: email, 
                     password: hashed,
                     fullname: fullname,
-                    avatar: 'public/default.jpg'
+                    avatar: 'avatar/default.jpg'
                 })
                 return user.save();
             })
@@ -158,7 +158,7 @@ module.exports = {
 
             let avtPath = null
             if (req.file) {
-                avtPath = req.file.path.replace('public/', '')
+                avtPath = req.file.path.replace("public", '')
             }
 
             //update db
