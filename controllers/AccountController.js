@@ -3,8 +3,10 @@ const Router = express.Router()
 const {validationResult} = require('express-validator')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const multer = require('multer')
 
 const Account = require('../models/AccountModel')
+const {ObjectId} = require('mongodb')
 
 
 
@@ -99,7 +101,7 @@ module.exports = {
                     email: email, 
                     password: hashed,
                     fullname: fullname,
-                    avatar: ''
+                    avatar: 'public/default.jpg'
                 })
                 return user.save();
             })
@@ -126,14 +128,95 @@ module.exports = {
 
     },
 
-
     getProfile: async function(req, res){
-        const {JWT_SECRET} = process.env
-        var decodedJWT = jwt.verify(req.session.token, JWT_SECRET)
+        try{
+            const {JWT_SECRET} = process.env
+            var decodedJWT = jwt.verify(req.session.token, JWT_SECRET)
+    
+            var ObjectId = require('mongodb').ObjectId
+            const user = await Account.findOne( {"_id": new ObjectId(decodedJWT)})
+    
+            const error = req.flash('error') || ''
+            const success = req.flash('success') || ''
+    
+            res.render('profile', {user, error, success})
+        }
+        catch(e){
+            return res.redirect('login')
+        }
+    },
 
-        var ObjectId = require('mongodb').ObjectId
-        const user = await Account.findOne( {"_id": new ObjectId(decodedJWT)})
+    postProfile: async function(req, res){
+        try{
+    
+            const {JWT_SECRET} = process.env
+            var decodedJWT = jwt.verify(req.session.token, JWT_SECRET)
+    
+            var ObjectId = require('mongodb').ObjectId
+    
+            let acc = await Account.findOne({_id: new ObjectId(decodedJWT)})
 
-        res.render('profile', {user})
+            let avtPath = null
+            if (req.file) {
+                avtPath = req.file.path.replace('public/', '')
+            }
+
+            //update db
+            acc.email = req.body.email
+            acc.fullname = req.body.fullname
+            acc.avatar = avtPath
+
+            const saveacc = await acc.save();
+            console.log('update thanh cong')
+            console.log(avtPath)
+
+            req.flash('success', 'Cập nhật thành công')
+            return res.redirect('profile')
+
+        }
+        catch(e){
+            req.flash('error', e.message)
+            return res.redirect('profile')
+        }
+    },
+
+    getChangepassword: function(req, res){
+        if(!req.session.token){
+            return res.redirect('login')
+        }
+        else{
+            const error = req.flash('error') || ''
+            res.render('changepassword', {error})
+        }
+    },
+
+    postChangepassword: async function(req, res){
+        let {password, newpassword, confirmpassword} = req.body
+
+        let acc = await Account.findOne({_id: req.user.id})
+
+        let result = validationResult(req)
+
+        if((result.errors.length === 0)){
+
+            hashed = await bcrypt.hash(newpassword, 10)
+
+            acc.password = hashed
+            const saveacc = await acc.save()
+            console.log('doi mat khau thanh cong')
+            return res.redirect('login')
+        }
+
+        else {
+            let messages = result.mapped()
+            let message = ''
+            for (m in messages) {
+                message = messages[m].msg
+                break
+            }
+            req.flash('error', message)
+            return res.redirect('changepassword')
+        }
     }
 }
+
