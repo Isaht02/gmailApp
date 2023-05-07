@@ -164,7 +164,9 @@ module.exports = {
             //update db
             acc.email = req.body.email
             acc.fullname = req.body.fullname
-            acc.avatar = avtPath
+            if(avtPath !== null){
+                acc.avatar = avtPath
+            }
 
             const saveacc = await acc.save();
             console.log('update thanh cong')
