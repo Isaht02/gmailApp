@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/stylesheets/admin.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <table cellpadding="10" cellspacing="10" style="border-collapse: collapse; margin: auto">
+
+        <tr class="control" style="text-align: left; font-weight: bold; font-size: 20px">
+            <td colspan="6">
+                <a style="color:blue">Tổng số lượng mail: </a>
+                <a style="color:blue"><%= mailcount %></a>
+                <a  style="padding-left: 50px; color: red;">Tổng số lượng thành viên: </a>
+                <a style="padding-left: 0px; color: red"><%= membercount %></a>
+                <a href="/account/login" class="btn btn-outline-primary" style="float: right; margin: 0px 5px 0px 20px;">Back</a>
+            </td>
+        </tr>
+
+
+        <tr class="header" style="color: rgb(0, 158, 47); font-weight: bold">
+            <td >Email</td>
+            <td>Full Name</td>
+            <td>Phone number</td>
+        </tr>
+        <% for(var i = 0; i < listmember.length; i++){ %>
+            <tr class="item">
+                <td>
+                    <%=listmember[i].email%>
+                </td>
+                <td>
+                    <%=listmember[i].fullname%>
+                </td>
+                <td>
+                    <%=listmember[i].phonenum%>
+                </td>
+                <td><a href="#">Edit</a> | <a href="#" class="delete">Delete</a></td>
+            </tr>
+            <% } %>
+
+    </table>
+</body>
+
+</html>

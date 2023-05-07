@@ -21,5 +21,8 @@ Router.post('/profile', upload.single('avatar'), AccountController.postProfile)
 Router.get('/changepassword', AccountController.getChangepassword)
 Router.post('/changepassword', checkLogin, passwordValidator, AccountController.postChangepassword)
 
+Router.get('/admin', AccountController.getAdmin)
 Router.get('/logout', AccountController.logOut)
+
+
 module.exports = Router

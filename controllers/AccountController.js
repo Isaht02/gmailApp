@@ -6,6 +6,8 @@ const jwt = require('jsonwebtoken')
 const multer = require('multer')
 
 const Account = require('../models/AccountModel')
+const Email = require('../models/EmailModel')
+
 const {ObjectId} = require('mongodb')
 
 
@@ -163,7 +165,9 @@ module.exports = {
             //update db
             acc.email = req.body.email
             acc.fullname = req.body.fullname
-            acc.avatar = avtPath
+            if(avtPath !== null){
+                acc.avatar = avtPath
+            }
 
             const saveacc = await acc.save();
             console.log('update thanh cong')
@@ -216,6 +220,16 @@ module.exports = {
             req.flash('error', message)
             return res.redirect('changepassword')
         }
+    },
+
+    getAdmin: async function(req, res){
+        const error = req.flash('error') || ''
+        const membercount = await Account.count({})
+
+        const listmember = await Account.find()
+        
+        const mailcount = await Email.count({})
+        res.render('admin', {error, membercount, mailcount, listmember})
     },
     logOut: async function(req, res){
         req.session.destroy();
