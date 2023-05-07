@@ -224,6 +224,7 @@ module.exports = {
 
     getAdmin: async function(req, res){
         const error = req.flash('error') || ''
+        if (req.user.email !== 'admin@gmail.com') return res.render('badgate', {code: "405", err: "Ban khong co quyen truy cap vao trang nay"})
         const membercount = await Account.count({})
 
         const listmember = await Account.find()

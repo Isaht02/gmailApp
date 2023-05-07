@@ -30,7 +30,7 @@ app.get('/test', (req, res) => {
 	res.render('reply')
 })
 
-app.all('*', (req, res) => res.render('badgate', {code: "101", err: "Duong dan hoac lien ket khong ho tro"}))
+app.all('*', (req, res) => res.render('badgate', {code: "404", err: "Duong dan hoac lien ket khong ho tro"}))
 
 const port = process.env.PORT || 8080
 
@@ -48,3 +48,16 @@ database.once('connected', () => {
         console.log('http://localhost:' + port)
     })
 })
+
+// mongoose.connect('mongodb://localhost/gmailApp', {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//     useCreateIndex: true
+// })
+// .then(() => {
+//     // chỉ start server sau khi đã connect đến db
+//     app.listen(port, () => {
+//         console.log('http://localhost:' + port)
+//     })
+// })
+// .catch(e => console.log('Không thể kết nối tới db server: ' + e.message))
