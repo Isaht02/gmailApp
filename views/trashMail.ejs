@@ -24,13 +24,13 @@
     <div class="container">
     <div class="row">
         <div class="container mt-3">
-            <a href="/account/profile"><h4 class="welcome-text text-right mb-2"><img src="/avt.jpg" class="avatar" id="avatar-preview"><%= name %></h4></a>
+            <a href="/profile"><h4 class="welcome-text text-right mb-2"><img src="/avt.jpg" class="avatar" id="avatar-preview"><%= name %></h4></a>
         </div>
         <div class="col-sm-3">
 
             <a href="/email/send" class="btn btn-danger btn-block btn-compose-email">Send Email</a>
             <ul class="nav nav-pills nav-stacked nav-email shadow mb-20">
-                <li class="active">
+                <li>
                     <a href="/email">
                         <i class="fa fa-inbox"></i> Inbox  <span class="label pull-right"></span>
                     </a>
@@ -45,7 +45,7 @@
                     <a href="/email/draftemail">
                         <i class="fa fa-file-text-o"></i> Drafts <span class="label label-info pull-right inbox-notification"></span>
                     </a>
-                </li>
+                </li class="active">
                 <li><a href="/email/trashemail"> <i class="fa fa-trash-o"></i> Trash</a></li>
             </ul><!-- /.nav -->
 
@@ -104,20 +104,6 @@
                                     <button value="trash" name="options" class="btn btn-default btn-sm tooltips" type="submit" title="Delete"><i class="fa fa-trash-o"></i></button>
                                 </div>
                             </li>
-                            <li class="hidden-xs">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-default btn-sm">Label</button>
-                                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
-                                    <span class="caret"></span>
-                                    <span class="sr-only">Toggle Dropdown</span>
-                                </button>
-                                <ul class="dropdown-menu" role="menu">
-                                    <li><a href="#"><i class="fa fa-tags"></i> Promotions</a></li>
-                                    <li><a href="#"><i class="fa fa-tags"></i> Job</a></li>
-                                    <li><a href="#"><i class="fa fa-tags"></i> Backup</a></li>
-                                </ul>
-                            </div>
-                        </li>
                         </ul>
                     </div>
                     <div class="pull-right">
