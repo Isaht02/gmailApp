@@ -30,7 +30,7 @@ app.get('/test', (req, res) => {
 	res.render('reply')
 })
 
-app.all('*', (req, res) => res.json({code:101, message: 'Đường dẫn hoặc phương thức không được hỗ trợ'}))
+app.all('*', (req, res) => res.render('badgate', {code: "101", err: "Duong dan hoac lien ket khong ho tro"}))
 
 const port = process.env.PORT || 8080
 

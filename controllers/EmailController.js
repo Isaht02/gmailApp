@@ -2,15 +2,21 @@ const {validationResult} = require('express-validator')
 const multer = require('multer')
 const Account = require('../models/AccountModel')
 const Email = require('../models/EmailModel')
+const mongoose = require('mongoose')
 
 module.exports = {
 	
 	searchEmails: async function(req, res, next) {
 		try{
+			const account = await Account.findOne({ _id: req.user.id })
 			const keyword = req.query.q;
 			const emails = await Email.find({ $or: [{ subject: { $regex: keyword, $options: 'i' } }, { body: { $regex: keyword, $options: 'i' } }] });
-
-			res.render('listMail', { emails: emails, keyword, name: req.user.name});
+			const lstEmails = []
+			emails.forEach(function(email, i) {
+ 				lstEmails.push(email.from)
+			})
+			const senders = await Account.find({ email: { $in: lstEmails }});
+			return res.render('listMail', {senders, emails: emails, keyword, name: req.user.name, avt: account.avatar});
 
 		}	
 		catch (error) {
@@ -21,10 +27,17 @@ module.exports = {
 
 	getAllEmails: async function (req, res, next) {
 		try {
+			const account = await Account.findOne({ _id: req.user.id })
 		  	const {mailbox} = await Account.findOne({ _id: req.user.id })
 				.select('mailbox')
 				.populate('mailbox.inbox mailbox.outbox mailbox.draft mailbox.trash');
-			return res.status(200).render('listMail', {emails: mailbox.inbox, name: req.user.name})
+
+			const lstEmails = []
+			mailbox.inbox.forEach(function(email, i) {
+ 				lstEmails.push(email.from)
+			})
+			const senders = await Account.find({ email: { $in: lstEmails }});
+			return res.status(200).render('listMail', {senders, emails: mailbox.inbox, name: req.user.name, avt: account.avatar})
 		}catch (error) {
 			console.log(error)
 			res.status(500)
@@ -33,10 +46,16 @@ module.exports = {
 
 	getSentEmails: async function (req, res, next) {
 		try {
+			const account = await Account.findOne({ _id: req.user.id })
 		  	const {mailbox} = await Account.findOne({ _id: req.user.id })
 				.select('mailbox')
 				.populate('mailbox.inbox mailbox.outbox mailbox.draft mailbox.trash');
-			return res.status(200).render('sentMail', {emails: mailbox.outbox, name: req.user.name})
+			const lstEmails = []
+			mailbox.outbox.forEach(function(email, i) {
+ 				lstEmails.push(email.from)
+			})
+			const senders = await Account.find({ email: { $in: lstEmails }});
+			return res.status(200).render('sentMail', {senders, emails: mailbox.outbox, name: req.user.name, avt: account.avatar})
 		}catch (error) {
 			console.log(error)
 			res.status(500)
@@ -45,6 +64,7 @@ module.exports = {
 
 	getImportantEmails: async function (req, res, next) {
 		try {
+			const account = await Account.findOne({ _id: req.user.id })
 		  	const {mailbox} = await Account.findOne({ _id: req.user.id })
 				.select('mailbox')
 				.populate('mailbox.inbox mailbox.outbox mailbox.draft mailbox.trash');
@@ -54,7 +74,12 @@ module.exports = {
 				{
 					emailFavorite.push(mailbox.inbox[i])
 				}
-			return res.status(200).render('favMail', {emails: emailFavorite, name: req.user.name})
+			const lstEmails = []
+			emailFavorite.forEach(function(email, i) {
+ 				lstEmails.push(email.from)
+			})
+			const senders = await Account.find({ email: { $in: lstEmails }});
+			return res.status(200).render('favMail', {senders, emails: emailFavorite, name: req.user.name, avt: account.avatar})
 		}catch (error) {
 			console.log(error)
 			res.status(500)
@@ -63,10 +88,16 @@ module.exports = {
 
 	getDraftEmails: async function (req, res, next) {
 		try {
+			const account = await Account.findOne({ _id: req.user.id })
 		  	const {mailbox} = await Account.findOne({ _id: req.user.id })
 				.select('mailbox')
 				.populate('mailbox.inbox mailbox.outbox mailbox.draft mailbox.trash');
-			return res.status(200).render('draftMail', {emails: mailbox.draft, name: req.user.name})
+			const lstEmails = []
+			mailbox.draft.forEach(function(email, i) {
+ 				lstEmails.push(email.from)
+			})
+			const senders = await Account.find({ email: { $in: lstEmails }});
+			return res.status(200).render('draftMail', {senders, emails: mailbox.draft, name: req.user.name, avt: account.avatar})
 		}catch (error) {
 			console.log(error)
 			res.status(500)
@@ -75,28 +106,43 @@ module.exports = {
 
 	getTrashEmails: async function (req, res, next) {
 		try {
+			const account = await Account.findOne({ _id: req.user.id })
 		  	const {mailbox} = await Account.findOne({ _id: req.user.id })
 				.select('mailbox')
 				.populate('mailbox.inbox mailbox.outbox mailbox.draft mailbox.trash');
-			return res.status(200).render('trashMail', {emails: mailbox.trash, name: req.user.name})
+			const lstEmails = []
+			mailbox.trash.forEach(function(email, i) {
+ 				lstEmails.push(email.from)
+			})
+			const senders = await Account.find({ email: { $in: lstEmails }});
+			return res.status(200).render('trashMail', {senders, emails: mailbox.trash, name: req.user.name, avt: account.avatar})
 		}catch (error) {
 			console.log(error)
 			res.status(500)
 		}	
 	},
 
-	getSendEmail: function (req, res, next) {
-		return res.render('sendMail', {name: req.user.name})
+	getSendEmail: async function (req, res, next) {
+		try {
+			const account = await Account.findOne({ _id: req.user.id })
+			return res.render('sendMail', {name: req.user.name, avt: account.avatar})
+		}catch (error) {
+			console.log(error)
+			res.status(500)
+		}	
+		
 	},
 
 	getDetailEmail: async function (req, res, next) {
 		try {
-			//console.log(req.params.id)
+			const account = await Account.findOne({ _id: req.user.id })
 		  	const email = await Email.findOne({ _id: req.params.id })
 		  	const error = req.flash('error') || ''
 		  	email.read = true
 		  	await email.save()
-			return res.status(200).render('readMail',{email, name: req.user.name, error}	)
+		  	const senders = await Account.findOne({ email: email.from })
+		  	console.log(senders)
+			return res.status(200).render('readMail',{senders, email, name: req.user.name, error, avt: account.avatar}	)
 		}catch (error) {
 			console.log(error)
 			res.status(500)
@@ -108,6 +154,7 @@ module.exports = {
 			if (req.body.subForm == 'Draft') {
 				try {
 					let newDraft = new Email({
+						idSender: req.user.id,
 						from: req.user.email,
 						to: req.body.to,
 						subject: req.body.subject,
@@ -146,6 +193,7 @@ module.exports = {
 		    	attachmentPath = req.file.path;
 			}
 			const newEmailOut = new Email({
+				idSender: req.user.id,
 				from: req.user.email,
 				to: req.body.to,
 				subject: req.body.subject,
@@ -172,6 +220,7 @@ module.exports = {
 	saveDraft: async function (req, res, next) {
 		try {
 			let newDraft = new Email({
+				idSender: req.user.id,
 				from: req.body.from,
 				to: req.body.to,
 				subject: req.body.subject,
@@ -314,7 +363,7 @@ module.exports = {
 		try {
 			const foundEmail = await Email.findOne({ _id: req.body.idEmail });
 			if (!foundEmail)
-				return res.status(404).json({ message: 'Email not found', id: req.params.id });
+				return res.redirect('/email')
 			if (req.body.options == 'trash') 
 			{
 				try {
@@ -436,6 +485,7 @@ module.exports = {
 			const originalEmail = await Email.findOne({ _id: req.params.id })
 
 			const replyEmailSent = new Email({
+				idSender: req.user.id,
 				from: req.user.email,
 				to: originalEmail.from,
 				subject: originalEmail.subject,
@@ -473,6 +523,7 @@ module.exports = {
 			if (!foundAccount) return res.status(404).json({ error: 'User not found' })
 
 			const transferEmail = new Email({
+				idSender: req.user.id,
 				from: originalEmail.from,
 				to: req.body.email,
 				subject: originalEmail.subject,
@@ -488,6 +539,23 @@ module.exports = {
 			await foundAccount.save()
 			return res
 				.status(201).redirect('/email')
+
+		}catch (error) {
+			console.log(error)
+			res.status(500)
+		}	
+	},
+
+	addlLabelEmail: async function (req, res, next) {
+		try {
+			if (!req.body.options) return res.redirect('/email')
+			const foundEmail = await Email.findOne({ _id: req.body.idEmail });
+			if (!foundEmail)
+				return res.redirect('/email')
+			foundEmail.labels = req.body.options
+			await foundEmail.save()
+			console.log('Label: ' + foundEmail.labels)
+			return res.redirect('/email')
 
 		}catch (error) {
 			console.log(error)

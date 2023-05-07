@@ -101,7 +101,6 @@ module.exports = {
                     email: email, 
                     password: hashed,
                     fullname: fullname,
-                    avatar: 'avatar/default.jpg'
                 })
                 return user.save();
             })
@@ -217,6 +216,10 @@ module.exports = {
             req.flash('error', message)
             return res.redirect('changepassword')
         }
+    },
+    logOut: async function(req, res){
+        req.session.destroy();
+        return res.redirect('/account/login')
     }
 }
 

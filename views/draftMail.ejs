@@ -15,6 +15,14 @@
         border-radius: 50%;
         object-fit: cover;
         margin-right: 10px;
+
+    }
+    .b1 {
+        border: none;
+        background: none;
+        cursor: pointer;
+        margin: 0;
+        padding: 0;
     }
     </style>
     <title>Email</title>
@@ -23,9 +31,14 @@
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
     <div class="container">
     <div class="row">
-        <div class="container mt-3">
-            <a href="/profile"><h4 class="welcome-text text-right mb-2"><img src="/avt.jpg" class="avatar" id="avatar-preview"><%= name %></h4></a>
+        <div class="container mt-6">
+            <a href="/account/profile"><h4 class="welcome-text text-right"><img src="<% 
+                if (avt) { %>
+                <%= avt %> 
+                <% } else { %>/avatars/default.jpg<% } %>" class="avatar" id="avatar-preview"><%= name %> <a href="/account/logout"><p class="h5 text-danger text-right">Log out!</p></a></h4></a>
+
         </div>
+
         <div class="col-sm-3">
 
             <a href="/email/send" class="btn btn-danger btn-block btn-compose-email">Send Email</a>
@@ -41,7 +54,7 @@
                 <li>
                     <a href="/email/importantemail"><i class="fa fa-certificate"></i> Important</a>
                 </li>
-                <li class="active">
+                <li  class="active">
                     <a href="/email/draftemail">
                         <i class="fa fa-file-text-o"></i> Drafts <span class="label label-info pull-right inbox-notification"></span>
                     </a>
@@ -85,7 +98,7 @@
                     </div>
                     <div class="clearfix"></div>
                 </div><!-- /.panel-heading -->
-                <form action="/email/toggle" method="post">
+                <form action="/email/toggle" method="post" id="formS">
                 <div class="panel-sub-heading inner-all">
                     <div class="pull-left">
                         <ul class="list-inline no-margin">
@@ -104,6 +117,20 @@
                                     <button value="trash" name="options" class="btn btn-default btn-sm tooltips" type="submit" title="Delete"><i class="fa fa-trash-o"></i></button>
                                 </div>
                             </li>
+                            <li class="hidden-xs">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-default btn-sm">Label</button>
+                                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                                    <span class="caret"></span>
+                                    <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li class="m2"><button value="pro" formaction="/email/label" name="options" type="submit" class="btn btn-default b1" > <i class="fa fa-tags"></i> Promotions</button></li>
+                                    <li class="m2"><button value="job" formaction="/email/label" name="options" type="submit" class="btn btn-default b1" > <i class="fa fa-tags"></i> Job list</button></li>
+                                    <li class="m2"><button value="back" formaction="/email/label" name="options" type="submit" class="btn btn-default b1" > <i class="fa fa-tags"></i> Backup</button></li>
+                                </ul>
+                            </div>
+                        </li>
                         </ul>
                     </div>
                     <div class="pull-right">
@@ -170,10 +197,10 @@
                                 <td onclick="window.location.href = '/email/<%= email.id %>';">
                                     <div class="media">
                                         <a href="#" class="pull-left">
-                                            <img alt="..." src="https://bootdey.com/img/Content/avatar/avatar1.png" class="media-object">
+                                            <img alt="..." src="<%= senders[0].avatar %>" class="media-object">
                                         </a>
                                         <div class="media-body">
-                                            <h4 class="text-primary"><%= email.from %></h4>
+                                            <h4 class="text-primary"><%= senders[0].fullname %></h4>
                                             <p class="email-summary"><strong>[<%= email.subject %>] </strong><%= email.message.substring(0, 20) %>... <span class="label label-success">New</span> </p>
                                             <span class="media-meta"><%= time %></span>
                                         </div>

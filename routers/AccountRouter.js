@@ -18,8 +18,8 @@ Router.post('/register', registerValidator, AccountController.registerValidator)
 Router.get('/profile', AccountController.getProfile)
 Router.post('/profile', upload.single('avatar'), AccountController.postProfile)
 
-
 Router.get('/changepassword', AccountController.getChangepassword)
 Router.post('/changepassword', checkLogin, passwordValidator, AccountController.postChangepassword)
 
+Router.get('/logout', AccountController.logOut)
 module.exports = Router

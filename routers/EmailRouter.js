@@ -29,4 +29,6 @@ Router.post('/toggle', CheckLogin, EmailController.toggleEmailProperty)
 Router.delete('/delete/:id', CheckLogin, EmailController.deleteEmail)
 
 Router.post('/forward/:id', CheckLogin, EmailController.forwardEmail)
+
+Router.post('/label', CheckLogin, EmailController.addlLabelEmail)
 module.exports = Router

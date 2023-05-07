@@ -42,34 +42,37 @@
     <div class="container">
     <div class="row">
         <div class="container mt-3">
-                <a href="/profile"><h4 class="welcome-text text-right mb-2"><img src="/avt.jpg" class="avatar" id="avatar-preview"><%= name %></h4></a>
+                <a href="/account/profile"><h4 class="welcome-text text-right mb-2"><img src="<% 
+                if (avt) { %>
+                <%= avt %> 
+                <% } else { %>/avatars/default.jpg<% } %>" class="avatar" id="avatar-preview"><%= name %></h4></a>
          </div>
         <div class="col-sm-3">
             <ul class="nav nav-pills nav-stacked nav-email rounded shadow mb-20">
                 <li class="active">
                     <a href="/email">
-                        <i class="fa fa-inbox"></i> Inbox  <span class="label pull-right">7</span>
+                        <i class="fa fa-inbox"></i> Inbox  <span class="label pull-right"></span>
                     </a>
                 </li>
                 <li>
-                    <a href="#mail-compose.html"><i class="fa fa-envelope-o"></i> Send Mail</a>
+                    <a href="/email/sentemail"><i class="fa fa-envelope-o"></i> Sent Mail</a>
                 </li>
                 <li>
-                    <a href="#"><i class="fa fa-certificate"></i> Important</a>
+                    <a href="/email/importantemail"><i class="fa fa-certificate"></i> Important</a>
                 </li>
                 <li>
-                    <a href="#">
-                        <i class="fa fa-file-text-o"></i> Drafts <span class="label label-info pull-right inbox-notification">35</span>
+                    <a href="/email/draftemail">
+                        <i class="fa fa-file-text-o"></i> Drafts <span class="label label-info pull-right inbox-notification"></span>
                     </a>
                 </li>
-                <li><a href="#"> <i class="fa fa-trash-o"></i> Trash</a></li>
+                <li><a href="/email/trashemail"> <i class="fa fa-trash-o"></i> Trash</a></li>
             </ul>
 
             <h5 class="nav-email-subtitle">More</h5>
             <ul class="nav nav-pills nav-stacked nav-email mb-20 rounded shadow">
                 <li>
                     <a href="#">
-                        <i class="fa fa-folder-open"></i> Promotions  <span class="label label-danger pull-right">3</span>
+                        <i class="fa fa-folder-open"></i> Promotions  <span class="label label-danger pull-right"></span>
                     </a>
                 </li>
                 <li>
@@ -110,7 +113,7 @@
                     <div class="panel-sub-heading inner-all">
                         <div class="row">
                             <div class="col-md-8 col-sm-8 col-xs-7">
-                                <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="..." class="img-circle senden-img">
+                                <img src="<%= senders.avatar %>" alt="..." class="img-circle senden-img">
                                 <strong> Me</strong>
                                 to
                                 <span ><%= email.from %></span>
@@ -163,7 +166,7 @@
                     <div class="panel-sub-heading inner-all">
                         <div class="row">
                             <div class="col-md-8 col-sm-8 col-xs-7">
-                                <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="..." class="img-circle senden-img">
+                                <img src="<%= senders.avatar %>" alt="..." class="img-circle senden-img">
                                 <span><%= email.from %> </span>
                                 to
                                 <strong >me</strong>
