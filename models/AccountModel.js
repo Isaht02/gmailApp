@@ -20,7 +20,10 @@ const AccountSchema = new Schema({
         type: String,
         require: true
     },
-    avatar: String,
+    avatar: {
+        type: String,
+		default: null,
+    },
 
     mailbox: {
         inbox: [{type: mongoose.Schema.Types.ObjectId, ref: 'Email'}],
