@@ -23,7 +23,9 @@ app.use(flash())
 const AccountRouter = require('./routers/AccountRouter')
 const EmailRouter = require('./routers/EmailRouter')
 
-
+app.get('/', (req, res) => {
+    res.redirect('/account/login')
+})
 app.use('/account', AccountRouter)
 app.use('/email', EmailRouter)
 app.get('/test', (req, res) => {
