@@ -69,7 +69,7 @@
                 <div class="panel panel-default">
                     <div class="panel-body message">
                         <p class="text-center">New Message</p>
-                        <form action="/email/send" class="form-horizontal" method="post" enctype="multipart/form-data">
+                        <form action="/email/send" id="myForm" class="form-horizontal" method="post" enctype="multipart/form-data">
                             <div class="form-group">
                                 <label for="to" class="col-sm-1 control-label">To:</label>
                                 <div class="col-sm-11">
@@ -89,8 +89,8 @@
                                 <textarea class="form-control" id="message" name="message" rows="12" placeholder="Click here to message"></textarea>
                             </div>
                             <div class="form-group">
-                                <button type="submit" class="btn btn-success">Send</button>
-                                <button type="submit" class="btn btn-default">Draft</button>
+                                <button name="subForm" type="submit" class="btn btn-success" value="Send">Send</button>
+                                <button name="subForm" type="submit" class="btn btn-default" value="Draft">Draft</button>
                                 <button type="submit" class="btn btn-danger">Discard</button>
                             </div>
                         </form>
@@ -99,8 +99,12 @@
             </div>
         </div>
         <!--/.col-->
-    </div>
+    </div>   
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        
+    </script>
 </body>
 
 </html>

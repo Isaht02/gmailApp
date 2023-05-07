@@ -1,7 +1,9 @@
 body{margin-top:4px;
 background:#eee;
 }
-
+.fa-search{
+  color: black;
+}
 .btn-compose-email {
     padding: 10px 0px;
     margin-bottom: 20px;

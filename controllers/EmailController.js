@@ -5,6 +5,19 @@ const Email = require('../models/EmailModel')
 
 module.exports = {
 	
+	searchEmails: async function(req, res, next) {
+		try{
+			const keyword = req.query.q;
+			const emails = await Email.find({ $or: [{ subject: { $regex: keyword, $options: 'i' } }, { body: { $regex: keyword, $options: 'i' } }] });
+
+			res.render('listMail', { emails: emails, keyword, name: req.user.name});
+
+		}	
+		catch (error) {
+			console.log(error)
+			res.status(500)
+		}
+	},
 
 	getAllEmails: async function (req, res, next) {
 		try {
@@ -12,6 +25,60 @@ module.exports = {
 				.select('mailbox')
 				.populate('mailbox.inbox mailbox.outbox mailbox.draft mailbox.trash');
 			return res.status(200).render('listMail', {emails: mailbox.inbox, name: req.user.name})
+		}catch (error) {
+			console.log(error)
+			res.status(500)
+		}	
+	},
+
+	getSentEmails: async function (req, res, next) {
+		try {
+		  	const {mailbox} = await Account.findOne({ _id: req.user.id })
+				.select('mailbox')
+				.populate('mailbox.inbox mailbox.outbox mailbox.draft mailbox.trash');
+			return res.status(200).render('sentMail', {emails: mailbox.outbox, name: req.user.name})
+		}catch (error) {
+			console.log(error)
+			res.status(500)
+		}	
+	},
+
+	getImportantEmails: async function (req, res, next) {
+		try {
+		  	const {mailbox} = await Account.findOne({ _id: req.user.id })
+				.select('mailbox')
+				.populate('mailbox.inbox mailbox.outbox mailbox.draft mailbox.trash');
+			const emailFavorite = []
+			for(let i = 0; i<mailbox.inbox.length; i++)
+				if (mailbox.inbox[i].favorite)
+				{
+					emailFavorite.push(mailbox.inbox[i])
+				}
+			return res.status(200).render('favMail', {emails: emailFavorite, name: req.user.name})
+		}catch (error) {
+			console.log(error)
+			res.status(500)
+		}	
+	},
+
+	getDraftEmails: async function (req, res, next) {
+		try {
+		  	const {mailbox} = await Account.findOne({ _id: req.user.id })
+				.select('mailbox')
+				.populate('mailbox.inbox mailbox.outbox mailbox.draft mailbox.trash');
+			return res.status(200).render('draftMail', {emails: mailbox.draft, name: req.user.name})
+		}catch (error) {
+			console.log(error)
+			res.status(500)
+		}	
+	},
+
+	getTrashEmails: async function (req, res, next) {
+		try {
+		  	const {mailbox} = await Account.findOne({ _id: req.user.id })
+				.select('mailbox')
+				.populate('mailbox.inbox mailbox.outbox mailbox.draft mailbox.trash');
+			return res.status(200).render('trashMail', {emails: mailbox.trash, name: req.user.name})
 		}catch (error) {
 			console.log(error)
 			res.status(500)
@@ -26,8 +93,10 @@ module.exports = {
 		try {
 			//console.log(req.params.id)
 		  	const email = await Email.findOne({ _id: req.params.id })
-
-			return res.status(200).render('readMail',{email, name: req.user.name}	)
+		  	const error = req.flash('error') || ''
+		  	email.read = true
+		  	await email.save()
+			return res.status(200).render('readMail',{email, name: req.user.name, error}	)
 		}catch (error) {
 			console.log(error)
 			res.status(500)
@@ -36,6 +105,28 @@ module.exports = {
 
 	sendEmail: async function (req, res, next) {
 		try {
+			if (req.body.subForm == 'Draft') {
+				try {
+					let newDraft = new Email({
+						from: req.user.email,
+						to: req.body.to,
+						subject: req.body.subject,
+						message: req.body.message,
+					})
+
+					const savedDraft = await newDraft.save()
+					console.log('Draft saved', savedDraft)
+
+					const foundAccount = await Account.findOne({ _id: req.user.id })
+					foundAccount.mailbox.draft.push(savedDraft._id)
+					await foundAccount.save();
+					return res.redirect('/email')
+
+				}catch (error) {
+					console.log(error)
+					res.status(500)
+				}
+			} 
 			let result = validationResult(req)
 			if (result.errors.length !== 0) {
 				let messages = result.mapped()
@@ -63,16 +154,15 @@ module.exports = {
 			})
 			const savedEmailOut = await newEmailOut.save()
 
-			res
-				.status(201)
-				.json({ message: 'Email sent, reply received', sent: savedEmailOut, received: savedEmailOut })
-
 			const foundAccount = await Account.findOne({ _id: req.user.id })
 
 			foundAccount.mailbox.outbox.push(savedEmailOut._id)
 			foundReceiverAccount.mailbox.inbox.push(savedEmailOut._id)
 			await foundAccount.save()
 			await foundReceiverAccount.save()
+
+			return res.redirect('/email')
+
 		}catch (error) {
 			console.log(error)
 			res.status(500)
@@ -170,7 +260,7 @@ module.exports = {
 				'mailbox.inbox mailbox.outbox mailbox.draft mailbox.trash',
 			)
 
-			res.status(200).json({ message: 'Moved to trash', mailbox })										
+			return res.status(200).redirect('/email')									
 		}catch (error) {
 			console.log(error)
 			res.status(500)
@@ -222,11 +312,61 @@ module.exports = {
 
 	toggleEmailProperty: async function (req, res, next) {
 		try {
-			const foundEmail = await Email.findOne({ _id: req.params.id });
+			const foundEmail = await Email.findOne({ _id: req.body.idEmail });
 			if (!foundEmail)
 				return res.status(404).json({ message: 'Email not found', id: req.params.id });
+			if (req.body.options == 'trash') 
+			{
+				try {
+					const foundUser = await Account.findOne({ _id: req.user.id })
 
-			switch (req.params.toggle) {
+					let { inbox, outbox, draft, trash } = foundUser.mailbox
+					let isEmailFound = false
+
+					if (!isEmailFound)
+						for (let i = 0; i < inbox.length; i++) {
+							if (inbox[i].equals(req.body.idEmail)) {
+								trash.push(inbox[i])
+								inbox.splice(i, 1)
+								isEmailFound = true;
+								break;
+							}
+						}
+
+					if (!isEmailFound)
+						for (let i = 0; i < outbox.length; i++) {
+							if (outbox[i].equals(req.body.idEmail)) {
+								trash.push(outbox[i])
+								outbox.splice(i, 1)
+								isEmailFound = true;
+								break;
+							}
+						}
+
+					if (!isEmailFound)
+						for (let i = 0; i < draft.length; i++) {
+							if (draft[i].equals(req.body.idEmail)) {
+								trash.push(draft[i])
+								draft.splice(i, 1)
+								isEmailFound = true;
+								break;
+							}
+						}
+
+					
+					const savedUser = await foundUser.save()
+					const { mailbox } = await Account.populate(
+						savedUser,
+						'mailbox.inbox mailbox.outbox mailbox.draft mailbox.trash',
+					)
+
+					return res.redirect('/email')										
+				}catch (error) {
+					console.log(error)
+					res.status(500)
+				}	
+			}
+			switch (req.body.options) {
 				case 'read':
 					foundEmail.read = true;
 					break;
@@ -239,16 +379,12 @@ module.exports = {
 				case 'unfavorite':
 					foundEmail.favorite = false;
 					break;
-				default:
-					return res.status(404).json({ message: "Wrong params, can't parse request" })
 			}
 
 			const savedEmail = await foundEmail.save()
-			console.log(`${req.params.toggle} status updated`, savedEmail)
+			console.log(`${req.body.options} status updated`, savedEmail)
 
-			res
-				.status(200)
-				.json({ message: `${req.params.toggle} status updated`, email: savedEmail })																							
+			return res.redirect('/email')																							
 		}catch (error) {
 			console.log(error)
 			res.status(500)
@@ -293,70 +429,65 @@ module.exports = {
 			if (req.file) {
 		    	attachmentPath = req.file.path;
 			}
-
+			if (req.body.message.length === 0) {
+				req.flash('error', 'Vui lòng soạn nội dung tin nhắn')
+				return res.redirect(`/email/${req.params.id}`)
+			}
 			const originalEmail = await Email.findOne({ _id: req.params.id })
 
-			const newEmailOut = new Email({
-				from: originalEmail.from,
-				to: originalEmail.to,
+			const replyEmailSent = new Email({
+				from: req.user.email,
+				to: originalEmail.from,
 				subject: originalEmail.subject,
 				message: req.body.message,
 				attachment: attachmentPath,
 				originalMessage: originalEmail.message,
 				originalEmail: originalEmail._id,
 			})
-			const savedEmailOut = await newEmailOut.save()
-			console.log('Reply-email sent', savedEmailOut)
+			const savedEmail = await replyEmailSent.save()
+			console.log('Reply-email sent', savedEmail)
 
-			const newEmailIn = new Email({
-				from: originalEmail.from,
-				to: originalEmail.to,
-				message: req.body.message,
-				attachment: attachmentPath,
-				originalMessage: originalEmail.message,
-				originalEmail: originalEmail._id,
-			})
-			const savedEmailIn = await newEmailIn.save()
-			console.log('Reply-email received', savedEmailIn)
+			// res
+			// 	.status(201)
+			// 	.json({ message: 'Email reply received', sent: savedEmail})
 
-			res
-				.status(201)
-				.json({ message: 'Email reply received', sent: savedEmailOut, received: savedEmailIn })
-
-			const foundAccount = await Account.findOne({ _id: req.user.id })
-			foundAccount.mailbox.outbox.push(savedEmailOut._id)
-			foundAccount.mailbox.inbox.push(savedEmailIn._id)
-			await foundAccount.save()																		
+			const senderAccount = await Account.findOne({ _id: req.user.id })
+			const receiverAccount = await Account.findOne({ email: originalEmail.from })
+			senderAccount.mailbox.outbox.push(savedEmail._id)
+			receiverAccount.mailbox.inbox.push(savedEmail._id)
+			await senderAccount.save()
+			await receiverAccount.save()	
+			return res.redirect('/email')														
 		}catch (error) {
 			console.log(error)
 			res.status(500)
 		}	
 	},
 
-	transferEmail: async function (req, res, next) {
+	forwardEmail: async function (req, res, next) {
 		try {
-			const originalEmail = await Email.findOne({ _id: req.params.id })	
+			const originalEmail = await Email.findOne({ _id: req.params.id })
 			if (!originalEmail) return res.status(404).json({ error: 'Email not found' })
 
-			const foundAccount = await Account.findOne({ email: req.body.to });
+			const foundAccount = await Account.findOne({ email: req.body.email });
 			if (!foundAccount) return res.status(404).json({ error: 'User not found' })
 
 			const transferEmail = new Email({
 				from: originalEmail.from,
-				to: req.body.to,
+				to: req.body.email,
+				subject: originalEmail.subject,
 				message: originalEmail.message,
 				attachment: originalEmail.attachment,
 			})
-			const saveTransferEmail = await transferEmail.save()
+			const saveforwardEmail = await transferEmail.save()
 
 			const foundMyAccount = await Account.findOne({ _id: req.user.id })
-			foundMyAccount.mailbox.inbox.push(saveTransferEmail._id)
-			foundMyAccount.mailbox.outbox.push(saveTransferEmail._id)
+			foundAccount.mailbox.inbox.push(saveforwardEmail._id)
+			foundMyAccount.mailbox.outbox.push(saveforwardEmail._id)
 			await foundMyAccount.save()
-
+			await foundAccount.save()
 			return res
-				.status(201)
-				.json({ message: 'Transfer success', transfer:  transferEmail})
+				.status(201).redirect('/email')
 
 		}catch (error) {
 			console.log(error)

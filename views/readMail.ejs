@@ -15,6 +15,25 @@
         object-fit: cover;
         margin-right: 10px;
     }
+    .alert {
+      padding: 12px;
+      background-color: #f8d7da; /* Red */
+      color: #721c24;
+      border-color: #f5c6cb;
+      border: 1px solid #f5c6cb;
+      margin-top: 10px;
+      border-radius: 0.25rem;
+    }
+    .closebtn {
+      margin-left: 15px;
+      color: #EAB3B9;
+      font-weight: bold;
+      float: right;
+      font-size: 18px;
+      line-height: 20px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
     </style>
     <title>Email</title>
   </head>
@@ -65,9 +84,9 @@
                 </li>
             </ul>
         </div>
+
         <div class="col-sm-9">
             <!-- Star form compose mail -->
-            <form class="form-horizontal">
                 <div class="panel mail-wrapper rounded shadow">
                     <div class="panel-heading">
                         <div class="pull-left">
@@ -85,13 +104,62 @@
                         <div class="pull-left">
                             <h3 class="lead no-margin"><%= email.subject %></h3>
                         </div>
-                        <div class="pull-right">
-                            <button class="btn btn-info btn-sm tooltips" data-container="body" data-original-title="Print" type="button" data-toggle="tooltip" data-placement="top" title=""><i class="fa fa-print"></i> </button>
-                            <button class="btn btn-danger btn-sm tooltips" data-container="body" data-original-title="Trash" data-toggle="tooltip" data-placement="top" title=""><i class="fa fa-trash-o"></i></button>
-                            <a href="#mail-compose.html" class="btn btn-success btn-sm"><i class="fa fa-reply"></i> Reply</a>
-                        </div>
                         <div class="clearfix"></div>
                     </div><!-- /.panel-sub-heading -->
+                    <% if (email.originalMessage.length !== 0) { %>
+                    <div class="panel-sub-heading inner-all">
+                        <div class="row">
+                            <div class="col-md-8 col-sm-8 col-xs-7">
+                                <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="..." class="img-circle senden-img">
+                                <strong> Me</strong>
+                                to
+                                <span ><%= email.from %></span>
+                            </div>
+                            <% 
+                                const date = new Date(email.createdAt);
+                                const day = date.getDate();
+                                const month = date.getMonth() + 1;
+
+                                const hours = date.getHours();
+                                const minutes = date.getMinutes() + 2;
+
+                                const time = `${day}/${month} ${hours}:${minutes}`
+                            %>
+                            <div class="col-md-4 col-sm-4 col-xs-5">
+                                <p class="pull-right"> <%= time %></p>
+                            </div>
+                        </div>
+                    </div><!-- /.panel-sub-heading -->
+                    <div class="panel-body">
+                        <div class="view-mail">
+                            <p>
+                                <%= email.originalMessage %>
+                            </p>
+                        </div><!-- /.view-mail -->
+                        <% if (email.attachment) { %>
+                        <div class="attachment-mail">
+                            <p>
+                                <span><i class="fa fa-paperclip"></i> 1 attachments — </span>
+                                <a href="#">Download all attachments</a>
+                                |
+                                <a href="#">View all images</a>
+                            </p>
+                            <ul>
+                                <li>
+                                    <a class="name" href="#">
+                                        <% email.attachment %>
+                                        <span>20KB</span>
+                                    </a>
+
+                                </li>
+
+                            </ul>
+                        </div><!-- /.attachment mail -->
+
+                        <% } %>
+                        
+                    </div><!-- /.panel-body -->
+                    <% } %>
                     <div class="panel-sub-heading inner-all">
                         <div class="row">
                             <div class="col-md-8 col-sm-8 col-xs-7">
@@ -140,23 +208,63 @@
 
                             </ul>
                         </div><!-- /.attachment mail -->
+
                         <% } %>
+                        
                     </div><!-- /.panel-body -->
+                    <form action="/email/send/<%= email._id %>" class="form-horizontal" method="post">
+                            <textarea style="display: none;" class="form-control" id="replyMessage" name="message" rows="10" placeholder="Click here to reply"></textarea>                         
+                            <div class="text-right">
+                                <button id="btnSend" type="submit" style="display: none; margin-top: 2px;" class="btn btn-info btn-sm"><i class="fa fa-paper-plane"></i> Send</button>
+                            </div>
+                    </form >
+                        <% if (error.length > 0) { %>
+                        <div class="alert">
+                            <span id="closebtn" class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                            <%= error %>
+                        </div>
+                        <%  } %>
+                    <form action="/email/forward/<%= email._id %>" class="form-horizontal form-inline" method="post">
+                                <div class="form-group mr-10 ">
+                                <input style="display: none;" name="email" type="email" class="form-control" id="emailInput" placeholder="Enter email">
+                                </div>               
+                                    <button id="btnForward" type="submit" style="display: none; margin-top: 2px;" class="btn btn-info btn-sm"><i class="fa fa-paper-plane"></i> Forward</button>
+                            </form >
                     <div class="panel-footer">
+
                         <div class="pull-right">
-                            <a href="#mail-compose.html" class="btn btn-success btn-sm"><i class="fa fa-reply"></i> Reply</a>
-                            <button type="submit" class="btn btn-primary btn-sm"><i class="fa fa-arrow-right"></i> Forward</button>
+                            <form action="/email/<%= email._id %>/trash" method="post">
+                            <button id="btnReplyMessage" class="btn btn-success btn-sm"><i class="fa fa-reply"></i> Reply</button>
+                            <button id="btnForwardMessage" class="btn btn-primary btn-sm"><i class="fa fa-arrow-right"></i> Forward</button>
                             <button class="btn btn-info btn-sm tooltips" data-container="body" data-original-title="Print" type="button" data-toggle="tooltip" data-placement="top" title=""><i class="fa fa-print"></i> </button>
-                            <button class="btn btn-danger btn-sm tooltips" data-container="body" data-original-title="Trash" data-toggle="tooltip" data-placement="top" title=""><i class="fa fa-trash-o"></i></button>
+                            
+                            <button type="submit" class="btn btn-danger btn-sm tooltips" data-original-title="Trash" data-toggle="tooltip" data-placement="top" title=""><i class="fa fa-trash-o"></i></button>
+                            </form>
                         </div>
                         <div class="clearfix"></div>
                     </div><!-- /.panel-footer -->
                 </div><!-- /.panel -->
-            </form>
+            
             <!--/ End form compose mail -->
         </div>
     </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#btnReplyMessage').click(function(e) {
+                e.preventDefault();
+                $('#replyMessage').show();
+                $('#btnSend').show();
+                $('#h_attachment').show();
+            });
+            $('#btnForwardMessage').click(function(e) {
+                e.preventDefault();
+                $('#emailInput').show();
+                $('#btnForward').show();
+            });
+        });
+    </script>
 </body>
 </html>

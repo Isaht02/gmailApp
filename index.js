@@ -26,6 +26,9 @@ const EmailRouter = require('./routers/EmailRouter')
 
 app.use('/account', AccountRouter)
 app.use('/email', EmailRouter)
+app.get('/test', (req, res) => {
+	res.render('reply')
+})
 
 app.all('*', (req, res) => res.json({code:101, message: 'Đường dẫn hoặc phương thức không được hỗ trợ'}))
 
